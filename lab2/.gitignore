@@ -1,0 +1,6 @@
+*.log
+.DS_Store
+*.pyc
+__pycache__/
+.pigbootup
+pig_*.log
