@@ -18,8 +18,6 @@ def make_detector() -> PersonDetector:
     settings = load_settings()
     return PersonDetector(
         model_name=settings.detector_model_name,
-        model_path=settings.opencv_model_path,
-        config_path=settings.opencv_config_path,
         confidence_threshold=settings.confidence_threshold,
     )
 

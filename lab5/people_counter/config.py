@@ -34,8 +34,6 @@ class Settings:
     source_path: str
     max_frames: int
     detector_model_name: str
-    opencv_model_path: str
-    opencv_config_path: str
     confidence_threshold: float
     reconnect_delay_seconds: float
 
@@ -61,9 +59,7 @@ def settings_from_env() -> Settings:
         source_path=_env("SOURCE_PATH", ""),
         max_frames=_env_int("MAX_FRAMES", 0),
         detector_model_name=_env("DETECTOR_MODEL_NAME", "yolo11n.pt"),
-        opencv_model_path=_env("OPENCV_MODEL_PATH", ""),
-        opencv_config_path=_env("OPENCV_CONFIG_PATH", ""),
-        confidence_threshold=_env_float("CONFIDENCE_THRESHOLD", 0.0),
+        confidence_threshold=_env_float("CONFIDENCE_THRESHOLD", 0.25),
         reconnect_delay_seconds=_env_float("RECONNECT_DELAY_SECONDS", 2.0),
     )
 
