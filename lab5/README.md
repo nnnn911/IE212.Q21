@@ -38,23 +38,6 @@ PostgreSQL
     v
 Analytics Script
 ```
-
-Luồng TCP demo:
-
-```text
-Camera Ingestion Server
-    |
-    | JSON line over TCP
-    v
-Processing Server
-    |
-    | JSON line over TCP
-    v
-Storage Server
-```
-
-TCP dùng để minh họa cách gửi payload JSON giống `tcp_example.py`. Khi demo kiến trúc dữ liệu lớn, nên dùng luồng Kafka/Redpanda.
-
 ## Công nghệ sử dụng
 
 - Python 3.9+
