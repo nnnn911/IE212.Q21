@@ -47,35 +47,6 @@ Analytics Script
 - OpenCV để đọc webcam/video và encode/decode frame
 - Docker Compose để chạy hạ tầng miễn phí local
 
-## Cấu trúc project
-
-```text
-people_counter/
-  camera_server.py          # Camera Ingestion Server
-  processing_server.py      # Processing Server chạy YOLO
-  storage_server.py         # Storage Server lưu PostgreSQL
-  analytics.py              # Query thống kê theo phút/giờ/camera
-  config.py                 # Đọc cấu hình từ .env
-  models.py                 # Schema payload frame/result/bounding box
-  broker/
-    kafka_client.py
-    tcp_json.py
-  camera/
-    sources.py
-    frame_sampler.py
-  processing/
-    detector.py
-    image_codec.py
-  storage/
-    database.py
-    schema.sql
-scripts/
-tests/
-docker-compose.yml
-.env.example
-requirements.txt
-```
-
 ## Cài đặt lần đầu
 
 Vào thư mục project:
