@@ -6,7 +6,7 @@ Hệ thống đếm số người trong camera/video theo kiến trúc phân tá
 - **Processing Server**: nhận frame; chạy YOLO để nhận diện class `person`; tạo bounding boxes và `people_count`.
 - **Storage Server**: nhận kết quả; lưu metadata, bounding boxes và số người vào PostgreSQL.
 
-Hệ thống chỉ dùng **một model object detection: YOLO** qua Ultralytics.
+Hệ thống dùng một model object detection: YOLO qua Ultralytics.
 
 ## Luồng dữ liệu
 
@@ -118,13 +118,6 @@ docker compose up -d
 docker compose ps
 ```
 
-Kỳ vọng thấy:
-
-```text
-postgres   Up ... healthy
-redpanda   Up ...
-```
-
 ## Cấu hình quan trọng
 
 File `.env` mặc định:
@@ -199,8 +192,6 @@ python3 -m people_counter.camera_server \
   --fps 5
 ```
 
-Không truyền `--max-frames` nếu muốn chạy hết video. Chỉ dùng `--max-frames N` khi muốn test nhanh một đoạn.
-
 ## Chạy với webcam
 
 Giữ Storage Server và Processing Server đang chạy, rồi ở Terminal 3:
@@ -257,32 +248,6 @@ Xuất CSV:
 
 ```bash
 python3 -m people_counter.analytics --group-by camera --csv output.csv
-```
-
-## Chạy demo TCP
-
-TCP chỉ dùng để minh họa truyền JSON payload giữa server. Storage vẫn cần PostgreSQL.
-
-Terminal 1:
-
-```bash
-python3 -m people_counter.storage_server --mode tcp
-```
-
-Terminal 2:
-
-```bash
-python3 -m people_counter.processing_server --mode tcp
-```
-
-Terminal 3:
-
-```bash
-python3 -m people_counter.camera_server \
-  --mode tcp \
-  --source-type video \
-  --source-path path/to/video.mp4 \
-  --fps 5
 ```
 
 ## Payload schema
@@ -342,73 +307,3 @@ Bảng `people_detections` lưu:
 - `created_at`
 
 `UNIQUE (camera_id, frame_id)` giúp tránh lưu trùng khi message được gửi lại.
-
-## Kiểm thử
-
-Chạy unit tests:
-
-```bash
-python3 -m unittest tests.test_models tests.test_image_codec tests.test_analytics_sql tests.test_detector tests.test_config -v
-```
-
-Kiểm tra syntax/import:
-
-```bash
-PYTHONPYCACHEPREFIX=.pycache_tmp python3 -m compileall people_counter tests
-```
-
-Nếu đã cài `pytest`:
-
-```bash
-python3 -m pytest -v
-```
-
-## Lỗi thường gặp
-
-**Storage Server chỉ hiện `Starting Storage Server in kafka mode` hoặc `waiting for detection results`**
-
-Đây không phải lỗi. Storage Server là service chạy dài hạn và đang chờ Processing Server gửi kết quả. Hãy chạy tiếp Processing Server và Camera Server.
-
-**Processing Server hiện `waiting for frames on topic camera.frames`**
-
-Đây là trạng thái sẵn sàng. Hãy chạy Camera Server để gửi frame.
-
-**Docker báo `no configuration file provided`**
-
-Bạn đang chạy sai thư mục. Chạy:
-
-```bash
-cd path/to/lab5
-docker compose up -d
-```
-
-Hoặc dùng đường dẫn tuyệt đối:
-
-```bash
-docker compose -f path/to/lab5/docker-compose.yml up -d
-```
-
-**Thiếu Ultralytics hoặc YOLO không load được**
-
-Cài lại dependencies:
-
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-**Video chỉ chạy một đoạn**
-
-Không truyền `--max-frames`. Đảm bảo `.env` có:
-
-```env
-MAX_FRAMES=0
-```
-
-## Mở rộng theo hướng Big Data
-
-- Chạy nhiều Camera Ingestion Server với `--camera-id` khác nhau.
-- Tăng partition cho topic `camera.frames`.
-- Chạy nhiều Processing Server cùng consumer group để scale ngang.
-- Thêm MinIO để lưu frame gốc, payload chỉ truyền `object_key`.
-- Dùng TimescaleDB nếu muốn tối ưu truy vấn time-series lớn.
